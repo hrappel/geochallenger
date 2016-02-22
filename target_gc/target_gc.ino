@@ -5,7 +5,7 @@
 
 #include <VirtualWire.h>
 int confLed = 3;
-char iD_check[16];
+char iD_check[16] = {"54269236526");
 
 uint8_t buf[16];
 uint8_t buflen = 16;
@@ -23,9 +23,9 @@ void setup() {
 void loop() {
   if (vw_get_message(buf, &buflen)) {
     digitalWrite(confLed, HIGH);
-    for (int i = 0; i < buflen; i++) {
+/*    for (int i = 0; i < buflen; i++) {
      iD_check[buflen-i] = buf[i];
-    }
+    }*/
     Serial.println("Sending id check for "); //Print the transmissor's id, but not it's check
     Serial.println(*buf); //There must be a better way to do this
     send(iD_check); //send iD_check
