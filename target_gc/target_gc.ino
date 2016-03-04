@@ -5,7 +5,7 @@
 
 #include <VirtualWire.h>
 int confLed = 3;
-char iD_check[16] = {"54269236526");
+char iD_check[16] = {"FEDCBA987654321"};
 
 uint8_t buf[16];
 uint8_t buflen = 16;
@@ -16,8 +16,9 @@ void setup() {
 
   vw_set_tx_pin(8);//Digital to tx's DATA
   vw_set_rx_pin(4);//rx's DATA
-  vw_setup(4000);// speed of data transfer Kbps
+  vw_setup(4000);// speed of data transfer Kbps 
   vw_rx_start();
+  Serial.println("begin");
 }
 
 void loop() {
@@ -29,12 +30,15 @@ void loop() {
     Serial.println("Sending id check for "); //Print the transmissor's id, but not it's check
     Serial.println(*buf); //There must be a better way to do this
     send(iD_check); //send iD_check
+  //  send(iD_check);
+  //  send(iD_check);
+    Serial.println("send");
   }
 }
 
 void send(char *message){
   vw_send((uint8_t *)message, strlen(message)); //send iD_check; maybe just use 16 on the lenght
   vw_wait_tx(); // Wait until the whole message is gone
-  delay(1000); //Not sure why wait on the receiver. Maybe we avoid noise on the communications
+  delay(500); //Not sure why wait on the receiver. Maybe we avoid noise on the communications
 }
 
