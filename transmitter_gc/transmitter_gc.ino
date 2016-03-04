@@ -32,9 +32,10 @@ void setup() {
 
 void loop() { //If button is pressed send iD then wait 2 seconds for confirmation
   valButton = digitalRead(sendButton);
-  Serial.println(valButton);
+  //Serial.println(valButton);
   if (valButton == LOW) {
     Serial.println("button pressed");
+    Serial.println();
     send(iD);
     //
     confirmation(iD_check); //wait confirmation
@@ -46,16 +47,18 @@ void send(char *message) {
   vw_send((uint8_t *)message, strlen(message)); //send iD; maybe change the string lenght  to 16
   vw_wait_tx(); // Wait until the whole message is gone
   Serial.println("send ok");
-  //  delay(2000);
+  delay(200);
 }
 
 void confirmation(char *iD_check) {
   uint8_t buf[16];
   uint8_t buflen = 16; //strlen(iD_check)
+  int bufCheck = 0;
 
   vw_rx_start(); //save battery:receive only when expecting a message
-  if (vw_wait_rx_max(5000) && vw_get_message(buf, &buflen)) { //wait 2 seconds to receive
+  if (vw_wait_rx_max(2000) && vw_get_message(buf, &buflen)) { //wait 2 seconds to receive
     digitalWrite(confLed, HIGH); //Now with a LED strip, change to some intern(hidden) small LED, or later remove
+
     for (int i = 0; i < buflen; i++) { //If confirmation sequence is wrong, exit
       if (buf[i] != iD_check[i]) {
         Serial.println("Wrong confirmation id");
@@ -63,9 +66,12 @@ void confirmation(char *iD_check) {
         vw_rx_stop();
         break;//exit(0);//Need to stop confirmation and go back to loop. Better ways?
       } else {
-        Serial.println("Good check!");
-        void lightLed(); // Lights the next LED on the line
+        bufCheck++;
       }
+    }
+    if (bufCheck == 15) {
+      void lightLed(); // Lights the next LED on the line
+      Serial.println("Good check!");
     }
   } else Serial.println("timeout");
   vw_rx_stop();
